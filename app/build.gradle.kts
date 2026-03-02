@@ -56,4 +56,14 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    // Supabase для работы с сервером
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:1.4.7")
+    implementation("io.github.jan-tennert.supabase:auth-kt:1.4.7")
+    implementation("io.ktor:ktor-client-android:2.3.7")
+
+    // Coroutines для асинхронной работы
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Material Design компоненты
+    implementation("com.google.android.material:material:1.11.0")
 }
