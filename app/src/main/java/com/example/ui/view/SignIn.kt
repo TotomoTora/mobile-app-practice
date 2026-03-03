@@ -1,5 +1,6 @@
 package com.example.practice.ui.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.practice.ui.theme.ExamenTheme
 import com.example.practice.ui.viewModel.SignInViewModel
 import com.example.data.model.SignInRequest
+import com.example.practice.R
 
 @Composable
 fun LoginScreen(
@@ -64,6 +66,11 @@ fun LoginScreen(
                     .clickable { navController.popBackStack() },
                 contentAlignment = Alignment.Center
             ) {
+                Image(
+                    painter = painterResource(id = R.drawable.arrow),
+                    contentDescription = "Назад",
+                    modifier = Modifier.size(20.dp)
+                )
 
             }
 

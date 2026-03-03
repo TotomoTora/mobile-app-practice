@@ -1,5 +1,7 @@
 package com.example.practice.ui.view
 
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.practice.ui.theme.ExamenTheme
 import com.example.practice.ui.viewModel.VerifyOTPViewModel
+import com.example.practice.R
 
 @Composable
 fun VerifyOTPScreen(
@@ -64,6 +68,12 @@ fun VerifyOTPScreen(
                     .clickable { navController.popBackStack() },
                 contentAlignment = Alignment.Center
             ) {
+                // Добавляем картинку стрелки
+                Image(
+                    painter = painterResource(id = R.drawable.arrow),
+                    contentDescription = "Назад",
+                    modifier = Modifier.size(20.dp)
+                )
 
             }
 

@@ -1,5 +1,6 @@
 package com.example.practice.ui.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.practice.ui.viewModel.NewPasswordViewModel
+import com.example.practice.R
 
 @Composable
 fun NewPasswordScreen(
@@ -44,7 +46,11 @@ fun NewPasswordScreen(
                     .clickable { navController.popBackStack() },
                 contentAlignment = Alignment.Center
             ) {
-
+                Image(
+                    painter = painterResource(id = R.drawable.arrow),
+                    contentDescription = "Назад",
+                    modifier = Modifier.size(20.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(30.dp))

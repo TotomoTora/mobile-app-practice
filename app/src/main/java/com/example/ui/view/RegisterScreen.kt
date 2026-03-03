@@ -1,6 +1,7 @@
 package com.example.practice.ui.view
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.practice.R
 import com.example.practice.ui.theme.ExamenTheme
 import com.example.practice.ui.viewModel.SignUpViewModel
 
@@ -85,7 +87,11 @@ fun RegisterScreen(
                     .clickable { navController.popBackStack() },
                 contentAlignment = Alignment.Center
             ) {
-
+                Image(
+                    painter = painterResource(id = R.drawable.arrow),
+                    contentDescription = "Назад",
+                    modifier = Modifier.size(20.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(30.dp))
@@ -98,7 +104,7 @@ fun RegisterScreen(
 
             // Поля ввода
             Text("Ваше имя", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF333333), modifier = Modifier.padding(bottom = 6.dp))
-            StyledTextField(value = name, onValueChange = { name = it }, placeholder = "Иван Иванов")
+            StyledTextField(value = name, onValueChange = { name = it }, placeholder = "XXXXXXXX")
 
             Spacer(modifier = Modifier.height(16.dp))
             Text("Email", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF333333), modifier = Modifier.padding(bottom = 6.dp))
