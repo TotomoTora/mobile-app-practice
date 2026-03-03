@@ -1,10 +1,13 @@
-package com.example.examen.data.service
+package com.example.practice.data.service
 
-import com.example.examen.data.model.*
+import com.example.data.model.SignUpResponse
+import com.example.data.model.VerifyOtpRequest
+import com.example.data.model.VerifyOtpResponse
+import com.example.data.model.*
 import retrofit2.Response
 import retrofit2.http.*
 
-const val API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c3dqamR4aHN4dndwYnZ2aWNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0NDY2NjYsImV4cCI6MjA4ODAyMjY2Nn0.2jYBR7I2luHVGT0rFdxSSSioNv16i-flg86xcKuQFDs"
+const val API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZHlva29ncWxjZHFseHd1b3pvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MjY4MTEsImV4cCI6MjA4ODEwMjgxMX0.wWRgbr1ScucUI7BOzXwO3VYjNXTy-6BWCsL9Dmd4kE0"
 
 interface UserManagementService {
 

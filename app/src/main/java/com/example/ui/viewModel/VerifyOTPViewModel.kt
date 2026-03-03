@@ -1,12 +1,12 @@
-package com.example.examen.ui.viewModel
+package com.example.practice.ui.viewModel
 
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.examen.data.RetrofitInstance
-import com.example.examen.data.model.VerifyOtpRequest
+import com.example.data.RetrofitInstance
+import com.example.data.model.VerifyOtpRequest
 import kotlinx.coroutines.launch
 
 class VerifyOTPViewModel : ViewModel() {

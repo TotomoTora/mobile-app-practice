@@ -1,4 +1,4 @@
-package com.example.examen.ui.theme
+package com.example.practice.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,4 +1,4 @@
-package com.example.examen.ui.view
+package com.example.practice.ui.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.examen.ui.theme.ExamenTheme
-import com.example.examen.ui.viewModel.VerifyOTPViewModel
+import com.example.practice.ui.theme.ExamenTheme
+import com.example.practice.ui.viewModel.VerifyOTPViewModel
 
 @Composable
 fun VerifyOTPScreen(
@@ -37,7 +37,7 @@ fun VerifyOTPScreen(
 ) {
     var otpValue by remember { mutableStateOf(TextFieldValue("")) }
     val context = LocalContext.current
-    val otpLength = 6
+    val otpLength = 8
 
     LaunchedEffect(otpValue.text) {
         if (otpValue.text.length == otpLength) {
@@ -158,7 +158,7 @@ fun OtpCell(
 
     Box(
         modifier = Modifier
-            .width(48.dp)
+            .width(42.dp)
             .height(60.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)

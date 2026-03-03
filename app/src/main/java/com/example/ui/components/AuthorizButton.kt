@@ -1,2 +1,2 @@
-package com.example.examen.ui.components
+package com.example.practice.ui.components
 

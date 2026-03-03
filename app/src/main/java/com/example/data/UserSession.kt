@@ -1,4 +1,4 @@
-package com.example.examen.data
+package com.example.data
 
 object UserSession {
     // id пользователя из auth.users (uuid)

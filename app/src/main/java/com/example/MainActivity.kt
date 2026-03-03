@@ -1,4 +1,4 @@
-package com.example.examen
+package com.example.practice
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,8 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.examen.ui.theme.ExamenTheme
-import com.example.examen.ui.view.*
+import com.example.practice.ui.theme.ExamenTheme
+import com.example.practice.ui.view.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

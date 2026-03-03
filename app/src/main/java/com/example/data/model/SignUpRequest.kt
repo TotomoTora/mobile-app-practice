@@ -1,4 +1,4 @@
-package com.example.examen.data.model
+package com.example.data.model
 
 data class SignUpRequest(
     val email: String,

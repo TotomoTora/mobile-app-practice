@@ -1,11 +1,11 @@
-package com.example.examen.ui.viewModel
+package com.example.practice.ui.viewModel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.examen.data.RetrofitInstance
-import com.example.examen.data.model.SignUpRequest
+import com.example.data.RetrofitInstance
+import com.example.data.model.SignUpRequest
 import kotlinx.coroutines.launch
 
 class SignUpViewModel : ViewModel() {

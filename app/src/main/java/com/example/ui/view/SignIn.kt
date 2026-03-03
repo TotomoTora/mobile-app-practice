@@ -1,4 +1,4 @@
-package com.example.examen.ui.view
+package com.example.practice.ui.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,9 +28,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.examen.ui.theme.ExamenTheme
-import com.example.examen.ui.viewModel.SignInViewModel
-import com.example.examen.data.model.SignInRequest
+import com.example.practice.ui.theme.ExamenTheme
+import com.example.practice.ui.viewModel.SignInViewModel
+import com.example.data.model.SignInRequest
 
 @Composable
 fun LoginScreen(

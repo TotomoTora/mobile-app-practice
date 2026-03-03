@@ -1,4 +1,4 @@
-package com.example.examen.ui.theme
+package com.example.practice.ui.theme
 
 object Strings {
     // Регистрация

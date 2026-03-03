@@ -1,6 +1,6 @@
-package com.example.examen.data
+package com.example.data
 
-import com.example.examen.data.service.UserManagementService
+import com.example.practice.data.service.UserManagementService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -9,7 +9,7 @@ import java.net.Proxy
 import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
-    const val SUPABASE_URL = "https://izswjjdxhsxvwpbvvicc.supabase.co/"
+    const val SUPABASE_URL = "https://gkdyokogqlcdqlxwuozo.supabase.co/"
 
 
     private val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress("10.207.106.59", 3128))

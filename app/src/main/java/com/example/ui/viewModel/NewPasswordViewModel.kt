@@ -1,12 +1,12 @@
-package com.example.examen.ui.viewModel
+package com.example.practice.ui.viewModel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.examen.data.RetrofitInstance
-import com.example.examen.data.UserSession
-import com.example.examen.data.model.ChangePasswordRequest
+import com.example.data.RetrofitInstance
+import com.example.data.UserSession
+import com.example.data.model.ChangePasswordRequest
 import kotlinx.coroutines.launch
 
 class NewPasswordViewModel : ViewModel() {

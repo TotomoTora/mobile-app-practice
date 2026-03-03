@@ -1,4 +1,4 @@
-package com.example.examen.ui.view
+package com.example.practice.ui.view
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.examen.ui.theme.ExamenTheme
-import com.example.examen.ui.viewModel.SignUpViewModel
+import com.example.practice.ui.theme.ExamenTheme
+import com.example.practice.ui.viewModel.SignUpViewModel
 
 @Composable
 fun RegisterScreen(
