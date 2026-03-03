@@ -213,6 +213,7 @@ fun ShieldCheckbox(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
             .clickable { onCheckedChange(!checked) },
         contentAlignment = Alignment.Center
     ) {
+        Icon(painter = painterResource(id = R.drawable.shield), contentDescription = null, tint = Color.Black, modifier = Modifier.size(14.dp))
     }
 }
 
