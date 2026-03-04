@@ -1,6 +1,6 @@
 package com.example.ui.view
 
-
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,18 +41,12 @@ fun HomeScreen() {
                 },
                 actions = {
                     // Иконка поиска
-                    IconButton(onClick = { /* Поиск */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Поиск"
-                        )
+                    IconButton(onClick = {}) {
+                        Icon(painter = painterResource(id = R.drawable.ic_search), contentDescription = null, tint = Color.Black, modifier = Modifier.size(14.dp))
                     }
                     // Иконка корзины
-                    IconButton(onClick = { /* Корзина */ }) {
-                        Icon(
-                            imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Корзина"
-                        )
+                    IconButton(onClick = {}) {
+                        Icon(painter = painterResource(id = R.drawable.ic_cart), contentDescription = null, tint = Color.Black, modifier = Modifier.size(14.dp))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -87,7 +81,7 @@ fun CategoriesSection() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Горизонтальные чипсы
+        // Горизонтальные
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
@@ -125,6 +119,63 @@ fun CategoryChip(
                 text = name,
                 color = if (isSelected) Color.White else Color.Black,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+            )
+        }
+    }
+}
+@Composable
+fun PopularSection() {
+    Column(
+        modifier = Modifier.padding(vertical = 16.dp)
+    ) {
+        // Заголовок
+        Text(
+            text = "Популярное",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Фильтры (все/outdoor/tennis)
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            val filters = listOf("Всё", "Outdoor", "Tennis")
+
+            items(filters) { filter ->
+                FilterChip(
+                    name = filter,
+                    isSelected = filter == "Всё"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun FilterChip(
+    name: String,
+    isSelected: Boolean
+) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = if (isSelected) Color(0xFF6200EE) else Color.Transparent,
+        border = if (!isSelected) BorderStroke(1.dp, Color.Gray) else null,
+        modifier = Modifier
+            .height(32.dp)
+            .wrapContentWidth()
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.padding(horizontal = 12.dp)
+        ) {
+            Text(
+                text = name,
+                color = if (isSelected) Color.White else Color.Gray,
+                fontSize = 14.sp
             )
         }
     }
