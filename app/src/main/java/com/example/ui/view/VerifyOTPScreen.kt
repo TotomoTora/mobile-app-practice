@@ -169,7 +169,7 @@ fun OtpCell(
     Box(
         modifier = Modifier
             .width(42.dp)
-            .height(60.dp)
+            .height(70.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(backgroundColor)
             .border(
