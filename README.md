@@ -7,7 +7,3 @@
 - Android 13.0 (API 33) и выше
 - Supabase в качестве бэкенда
 
-## Архитектура
-- Data Layer (работа с данными)
-- Domain Layer (бизнес-логика) 
-- Presentation Layer (UI)
