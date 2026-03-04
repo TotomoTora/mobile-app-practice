@@ -57,6 +57,7 @@ fun ProfileScreen(
 
     var isLoading by remember { mutableStateOf(false) }
     var errorText by remember { mutableStateOf<String?>(null) }
+
     // ---------- камера ----------
     val tmpImageUri = remember {
         val file = File(context.cacheDir, "profile_photo.jpg")
@@ -74,6 +75,7 @@ fun ProfileScreen(
                 PackageManager.PERMISSION_GRANTED
         if (ok) cameraLauncher.launch(tmpImageUri) else permissionLauncher.launch(Manifest.permission.CAMERA)
     }
+
     // ---------- загрузка профиля ----------
     LaunchedEffect(userId, accessToken) {
         isLoading = true
@@ -113,11 +115,13 @@ fun ProfileScreen(
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                TopHeader(isEditing = isEditing, onEditClick = { isEditing = !isEditing })
+                com.example.ui.view.TopHeader(
+                    isEditing = isEditing,
+                    onEditClick = { isEditing = !isEditing })
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                AvatarSection(
+                com.example.ui.view.AvatarSection(
                     avatarUri = avatarUri,
                     onClick = { if (isEditing) launchCamera() }
                 )
@@ -133,23 +137,99 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                BarcodeCard()
+                com.example.ui.view.BarcodeCard()
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                ProfileField("Имя", firstName, { firstName = it }, isEditing)
-                ProfileField("Фамилия", lastName, { lastName = it }, isEditing)
-                ProfileField("Адрес", address, { address = it }, isEditing)
-                ProfileField("Телефон", phone, { phone = it }, isEditing)
+                com.example.ui.view.ProfileField(
+                    "Имя",
+                    firstName,
+                    { firstName = it },
+                    isEditing
+                )
+                com.example.ui.view.ProfileField(
+                    "Фамилия",
+                    lastName,
+                    { lastName = it },
+                    isEditing
+                )
+                com.example.ui.view.ProfileField(
+                    "Адрес",
+                    address,
+                    { address = it },
+                    isEditing
+                )
+                com.example.ui.view.ProfileField("Телефон", phone, { phone = it }, isEditing)
 
-
+                if (isEditing) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                isLoading = true
+                                try {
+                                    val body = mapOf(
+                                        "firstname" to firstName,
+                                        "lastname" to lastName,
+                                        "address" to address,
+                                        "phone" to phone
+                                    )
+                                    val resp = RetrofitInstance.userManagementService.updateProfile(
+                                        authHeader = "Bearer $accessToken",
+                                        userIdFilter = "eq.$userId",
+                                        body = body
+                                    )
+                                    if (resp.isSuccessful) {
+                                        isEditing = false
+                                    } else {
+                                        errorText = "Ошибка сохранения: ${resp.code()}"
+                                    }
+                                } catch (e: Exception) {
+                                    errorText = "Не удалось сохранить профиль: ${e.localizedMessage}"
+                                } finally {
+                                    isLoading = false
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF48B2E7))
+                    ) {
+                        Text("Сохранить", fontSize = 16.sp, color = Color.White)
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
 
                 Spacer(modifier = Modifier.height(80.dp))
             }
 
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF48B2E7))
+                }
+            }
         }
     }
 
+    if (errorText != null) {
+        AlertDialog(
+            onDismissRequest = { errorText = null },
+            title = { Text("Ошибка") },
+            text = { Text(errorText ?: "") },
+            confirmButton = {
+                TextButton(onClick = { errorText = null }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 }
 @Composable
 fun TopHeader(isEditing: Boolean, onEditClick: () -> Unit) {
@@ -248,5 +328,48 @@ fun BarcodeCard() {
                 contentScale = ContentScale.FillBounds
             )
         }
+    }
+}
+@Composable
+fun ProfileField(
+    title: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    isEditing: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+    ) {
+        Text(
+            text = title,
+            fontSize = 14.sp,
+            color = Color(0xFF888888),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        BasicTextField(
+            value = value,
+            onValueChange = { if (isEditing) onValueChange(it) },
+            enabled = isEditing,
+            textStyle = LocalTextStyle.current.copy(
+                color = Color.Black,
+                fontSize = 16.sp
+            ),
+            decorationBox = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFFF7F7F7))
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    innerTextField()
+                }
+            }
+        )
     }
 }
