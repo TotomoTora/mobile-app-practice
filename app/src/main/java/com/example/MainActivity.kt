@@ -17,6 +17,7 @@ import androidx.navigation.navArgument
 import com.example.data.UserSession
 import com.example.practice.ui.theme.ExamenTheme
 import com.example.practice.ui.view.*
+import com.example.ui.view.HomeScreen
 import com.example.ui.view.Onboard1Screen
 import com.example.ui.view.Onboard2Screen
 import com.example.ui.view.Onboard3Screen
@@ -44,9 +45,26 @@ class MainActivity : ComponentActivity() {
                         composable("login") { LoginScreen(navController = navController) }
                         composable("register") { RegisterScreen(navController = navController) }
 
+                        composable("home") { HomeScreen(navController = navController) }
+                        composable("profile") {
+                            val userId = UserSession.userId
+                            val accessToken = UserSession.accessToken
+
+                            //if (userId != null && accessToken != null) {
+                            //    ProfileScreen(
+                            //        navController = navController,
+                           //         userId = userId,
+                            //        accessToken = accessToken
+                            //    )
+                            //} else {
+                            //    LoginScreen(navController = navController)
+                            //}
+                        }
+
                         composable("forgot_password") {
                             ForgotPasswordScreen(navController)
                         }
+
                         composable(
                             route = "verifyOTP/{email}/{type}",
                             arguments = listOf(
