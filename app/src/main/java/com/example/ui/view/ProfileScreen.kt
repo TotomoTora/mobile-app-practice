@@ -99,5 +99,88 @@ fun ProfileScreen(
         }
     }
 
+    Scaffold(
+        containerColor = Color.White,
+        bottomBar = { BottomBar(navController = navController, currentRoute = "profile") }
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
 
+                TopHeader(isEditing = isEditing, onEditClick = { isEditing = !isEditing })
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                AvatarSection(
+                    avatarUri = avatarUri,
+                    onClick = { if (isEditing) launchCamera() }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "$firstName $lastName",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF333333)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                BarcodeCard()
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                ProfileField("Имя", firstName, { firstName = it }, isEditing)
+                ProfileField("Фамилия", lastName, { lastName = it }, isEditing)
+                ProfileField("Адрес", address, { address = it }, isEditing)
+                ProfileField("Телефон", phone, { phone = it }, isEditing)
+
+
+
+                Spacer(modifier = Modifier.height(80.dp))
+            }
+
+        }
+    }
+
+}
+@Composable
+fun TopHeader(isEditing: Boolean, onEditClick: () -> Unit) {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "Профиль",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF333333),
+            modifier = Modifier.align(Alignment.Center)
+        )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(if (isEditing) Color.Transparent else Color(0xFF48B2E7))
+                .clickable { onEditClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            if (isEditing) {
+                Text("Готово", fontSize = 12.sp, color = Color(0xFF48B2E7), fontWeight = FontWeight.Bold)
+            } else {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_edit),
+                    contentDescription = "Edit",
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
+    }
 }
