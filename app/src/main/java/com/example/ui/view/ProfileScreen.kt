@@ -211,3 +211,42 @@ fun AvatarSection(avatarUri: Uri?, onClick: () -> Unit) {
         }
     }
 }
+@Composable
+fun BarcodeCard() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .width(40.dp)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Открыть",
+                fontSize = 12.sp,
+                color = Color.Gray,
+                modifier = Modifier.rotate(-90f),
+                maxLines = 1
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .padding(vertical = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_barcode),
+                contentDescription = "Barcode",
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.FillBounds
+            )
+        }
+    }
+}

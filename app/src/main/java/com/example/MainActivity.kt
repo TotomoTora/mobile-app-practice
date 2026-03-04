@@ -21,6 +21,7 @@ import com.example.ui.view.HomeScreen
 import com.example.ui.view.Onboard1Screen
 import com.example.ui.view.Onboard2Screen
 import com.example.ui.view.Onboard3Screen
+import com.example.ui.view.ProfileScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,15 +51,15 @@ class MainActivity : ComponentActivity() {
                             val userId = UserSession.userId
                             val accessToken = UserSession.accessToken
 
-                            //if (userId != null && accessToken != null) {
-                            //    ProfileScreen(
-                            //        navController = navController,
-                           //         userId = userId,
-                            //        accessToken = accessToken
-                            //    )
-                            //} else {
-                            //    LoginScreen(navController = navController)
-                            //}
+                            if (userId != null && accessToken != null) {
+                                ProfileScreen(
+                                    navController = navController,
+                                    userId = userId,
+                                    accessToken = accessToken
+                                )
+                            } else {
+                                LoginScreen(navController = navController)
+                            }
                         }
 
                         composable("forgot_password") {
