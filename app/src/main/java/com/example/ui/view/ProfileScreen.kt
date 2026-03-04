@@ -6,16 +6,36 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
+import com.example.practice.R
+import com.example.data.RetrofitInstance
+import com.example.practice.data.service.ProfileDto
+import kotlinx.coroutines.launch
 import java.io.File
 
 @Composable
@@ -25,6 +45,18 @@ fun ProfileScreen(
     accessToken: String      // access_token из signIn/signUp
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    var isEditing by remember { mutableStateOf(false) }
+
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var avatarUri by remember { mutableStateOf<Uri?>(null) }
+
+    var isLoading by remember { mutableStateOf(false) }
+    var errorText by remember { mutableStateOf<String?>(null) }
     // ---------- камера ----------
     val tmpImageUri = remember {
         val file = File(context.cacheDir, "profile_photo.jpg")
@@ -42,5 +74,30 @@ fun ProfileScreen(
                 PackageManager.PERMISSION_GRANTED
         if (ok) cameraLauncher.launch(tmpImageUri) else permissionLauncher.launch(Manifest.permission.CAMERA)
     }
+    // ---------- загрузка профиля ----------
+    LaunchedEffect(userId, accessToken) {
+        isLoading = true
+        try {
+            val service = RetrofitInstance.userManagementService
+            val list: List<ProfileDto> = service.getProfile(
+                authHeader = "Bearer $accessToken",
+                userIdFilter = "eq.$userId"
+            )
+            val profile = list.firstOrNull()
+            if (profile != null) {
+                firstName = profile.firstname.orEmpty()
+                lastName = profile.lastname.orEmpty()
+                address = profile.address.orEmpty()
+                phone = profile.phone.orEmpty()
+            } else {
+                errorText = "Профиль не найден"
+            }
+        } catch (e: Exception) {
+            errorText = "Не удалось загрузить профиль: ${e.localizedMessage}"
+        } finally {
+            isLoading = false
+        }
+    }
+
 
 }
