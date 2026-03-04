@@ -184,3 +184,30 @@ fun TopHeader(isEditing: Boolean, onEditClick: () -> Unit) {
         }
     }
 }
+@Composable
+fun AvatarSection(avatarUri: Uri?, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(100.dp)
+            .clip(CircleShape)
+            .background(Color.LightGray)
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        if (avatarUri != null) {
+            Image(
+                painter = rememberAsyncImagePainter(model = avatarUri),
+                contentDescription = "Avatar",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.ic_profile),
+                contentDescription = "Placeholder",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
