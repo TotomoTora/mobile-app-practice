@@ -10,18 +10,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
@@ -138,7 +133,7 @@ fun PopularSection() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Фильтры (все/outdoor/tennis)
+        // Фильтры
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
@@ -177,6 +172,134 @@ fun FilterChip(
                 color = if (isSelected) Color.White else Color.Gray,
                 fontSize = 14.sp
             )
+        }
+    }
+}
+@Composable
+fun BestSellerSection() {
+    Column(
+        modifier = Modifier.padding(vertical = 16.dp)
+    ) {
+        // Горизонтальный список товаров
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            // Создаем 4 карточки для примера
+            items(4) { index ->
+                ProductCard(
+                    brand = "BEST SELLER",
+                    name = "Nike Air Max",
+                    price = 752.00,
+                    imageRes = R.drawable.ic_launcher_background // Замените на ваше изображение
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductCard(
+    brand: String,
+    name: String,
+    price: Double,
+    imageRes: Int
+) {
+    Card(
+        modifier = Modifier
+            .width(160.dp)
+            .wrapContentHeight(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // Изображение товара
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .background(Color(0xFFF5F5F5))
+            ) {
+                // Здесь будет изображение
+                // Для теста используем заглушку
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color(0xFFE0E0E0)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Фото",
+                            color = Color.Gray
+                        )
+                    }
+                }
+            }
+
+            // Информация о товаре
+            Column(
+                modifier = Modifier.padding(12.dp)
+            ) {
+                // Бренд
+                Text(
+                    text = brand,
+                    fontSize = 10.sp,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Название
+                Text(
+                    text = name,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Цена и кнопка добавления
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "₽${String.format("%.2f", price)}",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF6200EE)
+                    )
+
+                    // Кнопка "+"
+                    Surface(
+                        shape = CircleShape,
+                        color = Color(0xFF6200EE),
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Добавить",
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
