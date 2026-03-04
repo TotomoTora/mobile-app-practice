@@ -10,13 +10,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practice.R
@@ -35,13 +39,17 @@ fun HomeScreen() {
                     )
                 },
                 actions = {
-                    // Иконка поиска
                     IconButton(onClick = {}) {
-                        Icon(painter = painterResource(id = R.drawable.ic_search), contentDescription = null, tint = Color.Black, modifier = Modifier.size(14.dp))
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Поиск"
+                        )
                     }
-                    // Иконка корзины
                     IconButton(onClick = {}) {
-                        Icon(painter = painterResource(id = R.drawable.ic_cart), contentDescription = null, tint = Color.Black, modifier = Modifier.size(14.dp))
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Корзина"
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -50,23 +58,25 @@ fun HomeScreen() {
             )
         }
     ) { paddingValues ->
-        // Основной контент
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
                 .padding(paddingValues)
         ) {
-
+            item { CategoriesSection() }
+            item { PopularSection() }
+            item { BestSellerSection() }
+            item { PromotionsSection() }
         }
     }
 }
+
 @Composable
 fun CategoriesSection() {
     Column(
         modifier = Modifier.padding(vertical = 16.dp)
     ) {
-        // Заголовок
         Text(
             text = "Категории",
             fontSize = 20.sp,
@@ -76,14 +86,11 @@ fun CategoriesSection() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Горизонтальные
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            // Список категорий
             val categories = listOf("Все", "Outdoor", "Tennis")
-
             items(categories) { category ->
                 CategoryChip(
                     name = category,
@@ -118,12 +125,12 @@ fun CategoryChip(
         }
     }
 }
+
 @Composable
 fun PopularSection() {
     Column(
         modifier = Modifier.padding(vertical = 16.dp)
     ) {
-        // Заголовок
         Text(
             text = "Популярное",
             fontSize = 20.sp,
@@ -133,13 +140,11 @@ fun PopularSection() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Фильтры
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             val filters = listOf("Всё", "Outdoor", "Tennis")
-
             items(filters) { filter ->
                 FilterChip(
                     name = filter,
@@ -175,23 +180,22 @@ fun FilterChip(
         }
     }
 }
+
 @Composable
 fun BestSellerSection() {
     Column(
         modifier = Modifier.padding(vertical = 16.dp)
     ) {
-        // Горизонтальный список товаров
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            // Создаем 4 карточки для примера
             items(4) { index ->
                 ProductCard(
                     brand = "BEST SELLER",
                     name = "Nike Air Max",
                     price = 752.00,
-                    imageRes = R.drawable.ic_launcher_background // Замените на ваше изображение
+                    imageRes = R.drawable.ic_launcher_background
                 )
             }
         }
@@ -220,15 +224,12 @@ fun ProductCard(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Изображение товара
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(140.dp)
                     .background(Color(0xFFF5F5F5))
             ) {
-                // Здесь будет изображение
-                // Для теста используем заглушку
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = Color(0xFFE0E0E0)
@@ -244,11 +245,9 @@ fun ProductCard(
                 }
             }
 
-            // Информация о товаре
             Column(
                 modifier = Modifier.padding(12.dp)
             ) {
-                // Бренд
                 Text(
                     text = brand,
                     fontSize = 10.sp,
@@ -258,7 +257,6 @@ fun ProductCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Название
                 Text(
                     text = name,
                     fontSize = 14.sp,
@@ -268,7 +266,6 @@ fun ProductCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Цена и кнопка добавления
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -281,7 +278,6 @@ fun ProductCard(
                         color = Color(0xFF6200EE)
                     )
 
-                    // Кнопка "+"
                     Surface(
                         shape = CircleShape,
                         color = Color(0xFF6200EE),
@@ -302,4 +298,111 @@ fun ProductCard(
             }
         }
     }
+}
+
+@Composable
+fun PromotionsSection() {
+    Column(
+        modifier = Modifier.padding(vertical = 16.dp)
+    ) {
+        Text(
+            text = "Акции",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            item {
+                PromotionCard(
+                    title = "Summer Sale",
+                    description = "15% OFF",
+                    backgroundColor = Color(0xFFFF9800),
+                    isNew = false
+                )
+            }
+
+            item {
+                PromotionCard(
+                    title = "NEW!",
+                    description = "",
+                    backgroundColor = Color(0xFF4CAF50),
+                    isNew = true
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PromotionCard(
+    title: String,
+    description: String,
+    backgroundColor: Color,
+    isNew: Boolean
+) {
+    Card(
+        modifier = Modifier
+            .width(140.dp)
+            .height(100.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor
+        )
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = title,
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                if (description.isNotEmpty()) {
+                    Text(
+                        text = description,
+                        color = Color.White,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                }
+
+                if (isNew) {
+                    Text(
+                        text = "Новинка",
+                        color = Color.White,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProductCardPreview() {
+    ProductCard(
+        brand = "BEST SELLER",
+        name = "Nike Air Max",
+        price = 752.00,
+        imageRes = R.drawable.ic_launcher_background
+    )
 }
