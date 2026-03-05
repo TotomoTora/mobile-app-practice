@@ -1,99 +1,86 @@
 package com.example.practice.ui.viewModel
 
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.data.RetrofitInstance
-import com.example.data.UserSession
 import com.example.data.model.ChangePasswordRequest
 import kotlinx.coroutines.launch
 
+
+/**
+ * ViewModel для экрана установки нового пароля (NewPasswordScreen)
+ * Отвечает за отправку нового пароля на сервер и управление навигацией после успешной смены
+ */
 class NewPasswordViewModel : ViewModel() {
 
+    /**
+     * Индикатор загрузки для отображения прогресса во время выполнения запроса
+     * true - выполняется запрос (показываем индикатор)
+     * false - запрос не выполняется
+     */
     val isLoading = mutableStateOf(false)
+
+    /**
+     * Сообщение об ошибке при смене пароля
+     * null - ошибки нет
+     * не null - текст ошибки для отображения пользователю
+     */
     val errorMessage = mutableStateOf<String?>(null)
-    val password = mutableStateOf("")
-    val confirmPassword = mutableStateOf("")
-    val passwordError = mutableStateOf<String?>(null)
 
-    fun updatePassword(newPassword: String) {
-        password.value = newPassword
-        validatePasswords()
-    }
-
-    fun updateConfirmPassword(newConfirmPassword: String) {
-        confirmPassword.value = newConfirmPassword
-        validatePasswords()
-    }
-
-    private fun validatePasswords() {
-        passwordError.value = when {
-            password.value != confirmPassword.value -> "Пароли не совпадают"
-            password.value.length < 6 -> "Пароль должен содержать минимум 6 символов"
-            else -> null
-        }
-    }
-
-    fun changePassword(email: String, navController1: String, navController: NavController) {
+    /**
+     * Отправляет запрос на смену пароля
+     * При успешном изменении перенаправляет пользователя на экран входа
+     * При ошибке сохраняет сообщение об ошибке
+     *
+     * @param email email пользователя, для которого меняется пароль
+     * @param newPassword новый пароль пользователя
+     * @param navController навигационный контроллер для перехода на экран входа
+     */
+    fun changePassword(email: String, newPassword: String, navController: NavController) {
+        // Запускаем корутину в скоупе ViewModel
+        // Это гарантирует, что запрос будет отменен при уничтожении ViewModel
         viewModelScope.launch {
             try {
-                // Валидация
-                if (password.value != confirmPassword.value) {
-                    errorMessage.value = "Пароли не совпадают"
-                    return@launch
-                }
-
-                if (password.value.length < 6) {
-                    errorMessage.value = "Пароль должен содержать минимум 6 символов"
-                    return@launch
-                }
-
+                // Устанавливаем состояние загрузки и сбрасываем предыдущую ошибку
                 isLoading.value = true
                 errorMessage.value = null
 
-                // Получаем токен из сессии
-                val accessToken = UserSession.accessToken
-                if (accessToken == null) {
-                    errorMessage.value = "Ошибка авторизации. Токен не найден"
-                    return@launch
-                }
+                // Создаем тело запроса с email и новым паролем
+                val body = ChangePasswordRequest(email, newPassword)
 
-                // Создаем запрос на смену пароля с email и новым паролем
-                val changePasswordRequest = ChangePasswordRequest(
-                    email = email,
-                    newPassword = password.value
-                )
+                /**
+                 * Отправка POST-запроса на сервер для смены пароля
+                 * Тело запроса: {"email": "user@example.com", "new_password": "newPass123"}
+                 */
+                val response = RetrofitInstance.userManagementService.changePassword(body)
 
-                // Формируем заголовок авторизации
-                val authHeader = "Bearer $accessToken"
-
-                // Вызываем метод с правильными параметрами
-                val response = RetrofitInstance.userManagementService.changePassword(
-                    authHeader = authHeader,
-                    request = changePasswordRequest
-                )
-
+                // Проверяем успешность ответа (код 2xx)
                 if (response.isSuccessful) {
-                    // Пароль успешно сменён – очищаем сессию и отправляем на экран входа
-                    UserSession.userId = null
-                    UserSession.accessToken = null
-
-                    navController.navigate("sign_in") {
-                        popUpTo("new_password") { inclusive = true }
+                    // Пароль успешно изменен
+                    // Перенаправляем пользователя на экран входа
+                    navController.navigate("login") {
+                        /**
+                         * Очищаем стек навигации:
+                         * popUpTo("login") inclusive = true удаляет все предыдущие экраны
+                         * из стека, включая сам экран login, а затем создает новый экземпляр
+                         * Это предотвращает возможность вернуться назад к экрану смены пароля
+                         */
+                        popUpTo("login") { inclusive = true }
                     }
                 } else {
-                    errorMessage.value = "Ошибка: ${response.code()} - ${response.message()}"
+                    // Обработка ошибки сервера (код 4xx, 5xx)
+                    errorMessage.value = "Ошибка: ${response.code()}"
                 }
             } catch (e: Exception) {
+                // Обработка ошибок сети или других исключений
                 errorMessage.value = "Ошибка сети: ${e.message}"
             } finally {
+                // В любом случае (успех или ошибка) снимаем состояние загрузки
                 isLoading.value = false
             }
         }
-    }
-
-    fun clearError() {
-        errorMessage.value = null
     }
 }
