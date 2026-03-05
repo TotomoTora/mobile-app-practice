@@ -10,7 +10,17 @@ data class CatalogCategory(
     val id: String,
     val title: String
 )
-
+/**
+ * Класс данных, представляющий товар в каталоге
+ * @param id уникальный идентификатор товара
+ * @param title название товара
+ * @param price цена товара
+ * @param categoryId идентификатор категории, к которой относится товар
+ * @param isBestSeller флаг, указывающий является ли товар бестселлером
+ * @param imageRes ресурс изображения товара
+ * @param isFavorite флаг, находится ли товар в избранном у текущего пользователя
+ * @param description подробное описание товара из базы данных
+ */
 data class CatalogProduct(
     val id: String,
     val title: String,
@@ -21,12 +31,28 @@ data class CatalogProduct(
     val isFavorite: Boolean = false,
     val description: String = ""
 )
-
+/**
+ * Главный экран каталога товаров
+ * @param navController навигационный контроллер для переходов между экранами
+ * @param initialCategoryTitle начальная выбранная категория (по умолчанию "Outdoor")
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(
     navController: NavHostController,
     initialCategoryTitle: String = "Outdoor"
 ) {
+    val categories = listOf(
+        CatalogCategory("all", "Все"),
+        CatalogCategory("ea4ed603-8cbe-4d57-a359-b6b843a645bc", "Outdoor"),
+        CatalogCategory("4f3a690b-41bf-4fca-8ffc-67cc385c6637", "Tennis"),
+        CatalogCategory("76ab9d74-7d5b-4dee-9c67-6ed4019fa202", "Men"),
+        CatalogCategory("8143b506-d70a-41ec-a5eb-3cf09627da9e", "Women")
+    )
+
+    // Состояния экрана
+    var allProducts by remember { mutableStateOf<List<com.example.examen.ui.view.CatalogProduct>>(emptyList()) } // Список всех товаров
+    var selectedCategory by remember { mutableStateOf(initialCategoryTitle) } // Выбранная категория
+    var isLoading by remember { mutableStateOf(false) } // Флаг загрузки данных
 
 }
