@@ -2,7 +2,11 @@ package com.example.ui.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -21,6 +25,7 @@ import androidx.navigation.NavHostController
 import com.example.data.RetrofitInstance
 import com.example.data.UserSession
 import com.example.practice.R
+import kotlinx.coroutines.launch
 import kotlin.collections.mapNotNull
 import kotlin.collections.toSet
 
@@ -37,7 +42,7 @@ fun FavoriteScreen(navController: NavHostController) {
     val token = UserSession.accessToken
     val userId = UserSession.userId
     // Создание корутин скоупа для асинхронных операций
-    rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     // Состояния экрана
     var products by remember { mutableStateOf<List<CatalogProduct>>(emptyList()) } // Список избранных товаров
@@ -71,11 +76,53 @@ fun FavoriteScreen(navController: NavHostController) {
                 )
                 // Создаем множество ID избранных товаров
                 val favIds = favs.mapNotNull { it.product_id }.toSet()
+                // Фильтруем товары, оставляя только избранные
+                products = allProducts
+                    .filter { favIds.contains(it.id) }
+                    .map { p ->
+                        CatalogProduct(
+                            id = p.id,
+                            title = p.title,
+                            price = p.cost,
+                            categoryId = p.category_id,
+                            isBestSeller = p.is_best_seller == true,
+                            imageRes = R.drawable.img_shoe_blue, // Изображение-заглушка
+                            isFavorite = true // Все товары на этом экране по умолчанию в избранном
+                        )
+                    }
             }
         } finally {
             isLoading = false
         }
     }
+
+    /**
+     * Функция удаления товара из избранного
+     * Выполняется прямо на экране избранного без перезагрузки
+     *
+     * @param product товар, который нужно удалить из избранного
+     */
+    fun removeFromFavourite(product: CatalogProduct) {
+        // Проверка авторизации
+        if (token == null || userId == null) return
+        scope.launch {
+            try {
+                val service = RetrofitInstance.userManagementService
+                // Отправка запроса на удаление из избранного
+                service.deleteFavourite(
+                    authHeader = "Bearer $token",
+                    userIdFilter = "eq.$userId",
+                    productIdFilter = "eq.${product.id}" // Фильтр по ID товара
+                )
+                // Обновление локального состояния - удаляем товар из списка
+                products = products.filter { it.id != product.id }
+            } catch (_: Exception) {
+                // Игнорируем ошибки для улучшения UX
+                // Можно добавить логирование при необходимости
+            }
+        }
+    }
+
     // Scaffold - базовая структура экрана с нижней навигацией
     Scaffold(
         bottomBar = { BottomBar(navController = navController, currentRoute = "favorite") },
@@ -131,6 +178,36 @@ fun FavoriteScreen(navController: NavHostController) {
                     containerColor = Color(0xFFF5F7FB) // Прозрачный фон
                 )
             )
+
+            // Отображение индикатора загрузки или сетки товаров
+            if (isLoading) {
+                // Центрированный индикатор загрузки
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF48B2E7))
+                }
+            } else {
+                // Сетка избранных товаров в 2 колонки
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2), // Фиксированное количество колонок
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp),
+                    contentPadding = PaddingValues(bottom = 16.dp), // Отступ снизу
+                    horizontalArrangement = Arrangement.spacedBy(12.dp), // Отступ между колонками
+                    verticalArrangement = Arrangement.spacedBy(12.dp) // Отступ между рядами
+                ) {
+                    // Отображение каждого товара в виде карточки
+                    items(products, key = { it.id }) { product ->
+                        FavoriteProductCard(
+                            product = product,
+                            onRemove = { removeFromFavourite(product) } // Передаем функцию удаления
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -168,49 +245,84 @@ private fun FavoriteProductCard(
                         .background(Color.White), // Белый фон для контраста
                     contentAlignment = Alignment.Center
                 ) {
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    // Контейнер для изображения товара
-                    Box(
+                    // Иконка заполненного сердца (всегда красная на этом экране)
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_heart_filled),
+                        contentDescription = "Favorite",
+                        tint = Color(0xFFDD4B4B), // Красный цвет
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(90.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFFF2F4F7)), // Светло-серый фон
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // Изображение товара
-                        Image(
-                            painter = painterResource(id = product.imageRes),
-                            contentDescription = product.title,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Fit // Масштабирование с сохранением пропорций
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    // Название товара
-                    Text(
-                        text = product.title,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF333333)
+                            .size(14.dp)
+                            .clickable { onRemove() } // При клике удаляем из избранного
                     )
+                }
+            }
 
-                    Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-                    // Нижний ряд с ценой и кнопкой добавления в корзину
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Цена товара
-                        Text(
-                            text = "₽${product.price}",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF333333),
-                            modifier = Modifier.weight(1f) // Занимает все доступное пространство слева
-                        )
-                    }
+            // Контейнер для изображения товара
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xFFF2F4F7)), // Светло-серый фон
+                contentAlignment = Alignment.Center
+            ) {
+                // Изображение товара
+                Image(
+                    painter = painterResource(id = product.imageRes),
+                    contentDescription = product.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit // Масштабирование с сохранением пропорций
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Отображение бейджа "BEST SELLER" если товар бестселлер
+            if (product.isBestSeller) {
+                Text(
+                    text = "BEST SELLER",
+                    fontSize = 10.sp,
+                    color = Color(0xFF48B2E7), // Голубой цвет
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+            // Название товара
+            Text(
+                text = product.title,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF333333)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Нижний ряд с ценой и кнопкой добавления в корзину
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Цена товара
+                Text(
+                    text = "₽${product.price}",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF333333),
+                    modifier = Modifier.weight(1f) // Занимает все доступное пространство слева
+                )
+
+                // Круглая кнопка "+" для добавления в корзину
+                Box(
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clip(CircleShape) // Круглая форма
+                        .background(Color(0xFF48B2E7)), // Голубой фон
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("+", fontSize = 18.sp, color = Color.White)
                 }
             }
         }
