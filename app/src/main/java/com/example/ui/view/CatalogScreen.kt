@@ -1,5 +1,6 @@
 package com.example.ui.view
 
+import android.util.Log
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
@@ -66,4 +67,6 @@ fun CatalogScreen(
     var selectedCategory by remember { mutableStateOf(initialCategoryTitle) } // Выбранная категория
     var isLoading by remember { mutableStateOf(false) } // Флаг загрузки данных
 
+    // Логирование для отладки - проверяем наличие данных пользователя
+    Log.d("CATALOG", "sessionUserId=$sessionUserId token=${token?.take(10)}")
 }

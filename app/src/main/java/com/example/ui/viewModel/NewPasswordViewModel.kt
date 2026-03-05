@@ -35,7 +35,7 @@ class NewPasswordViewModel : ViewModel() {
         }
     }
 
-    fun changePassword(email: String, navController: NavController) {
+    fun changePassword(email: String, navController1: String, navController: NavController) {
         viewModelScope.launch {
             try {
                 // Валидация
