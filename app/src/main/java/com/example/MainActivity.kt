@@ -18,6 +18,7 @@ import com.example.data.UserSession
 import com.example.practice.ui.theme.ExamenTheme
 import com.example.practice.ui.view.*
 import com.example.ui.view.CatalogScreen
+import com.example.ui.view.DetailsScreen
 import com.example.ui.view.FavoriteScreen
 import com.example.ui.view.HomeScreen
 import com.example.ui.view.OnboardingScreen
@@ -134,6 +135,25 @@ class MainActivity : ComponentActivity() {
                         composable("favorite") {
                             FavoriteScreen(navController = navController)
                         }
+
+                        /**
+                         * Экран детальной информации о товаре
+                         * Принимает параметр productId в маршруте
+                         * Пример: "details/123e4567-e89b-12d3-a456-426614174000"
+                         */
+                        composable(
+                            route = "details/{productId}",
+                            arguments = listOf(
+                                navArgument("productId") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+                            DetailsScreen(
+                                navController = navController,
+                                productId = productId
+                            )
+                        }
+
                         // ============= ЭКРАНЫ ВОССТАНОВЛЕНИЯ ПАРОЛЯ =============
 
                         /**
