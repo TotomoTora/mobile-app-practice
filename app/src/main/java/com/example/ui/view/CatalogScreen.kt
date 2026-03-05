@@ -3,9 +3,14 @@ package com.example.ui.view
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
+import com.example.data.UserSession
 import com.example.practice.R
 
-
+/**
+ * Класс данных, представляющий категорию товаров в каталоге
+ * @param id уникальный идентификатор категории в базе данных
+ * @param title отображаемое название категории для пользователя
+ */
 data class CatalogCategory(
     val id: String,
     val title: String
@@ -49,6 +54,12 @@ fun CatalogScreen(
         CatalogCategory("76ab9d74-7d5b-4dee-9c67-6ed4019fa202", "Men"),
         CatalogCategory("8143b506-d70a-41ec-a5eb-3cf09627da9e", "Women")
     )
+
+    // Получение данных текущего пользователя из глобального объекта сессии
+    val sessionUserId = UserSession.userId
+    val token = UserSession.accessToken
+    // Создание корутин скоупа для выполнения асинхронных операций
+    val scope = rememberCoroutineScope()
 
     // Состояния экрана
     var allProducts by remember { mutableStateOf<List<com.example.examen.ui.view.CatalogProduct>>(emptyList()) } // Список всех товаров
