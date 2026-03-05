@@ -7,12 +7,16 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -26,8 +30,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.data.RetrofitInstance
 import com.example.data.UserSession
 import com.example.practice.R
+import kotlinx.coroutines.launch
 
 /**
  * Класс данных, представляющий категорию товаров в каталоге
@@ -84,9 +90,128 @@ fun CatalogScreen(
     // Создание корутин скоупа для выполнения асинхронных операций
     val scope = rememberCoroutineScope()
 
+    // Состояния экрана
+    var allProducts by remember { mutableStateOf<List<com.example.practice.ui.view.CatalogProduct>>(emptyList()) } // Список всех товаров
+    var selectedCategory by remember { mutableStateOf(initialCategoryTitle) } // Выбранная категория
+    var isLoading by remember { mutableStateOf(false) } // Флаг загрузки данных
+
     // Логирование для отладки - проверяем наличие данных пользователя
     Log.d("CATALOG", "sessionUserId=$sessionUserId token=${token?.take(10)}")
 
+    /**
+     * Эффект для загрузки данных при первом входе на экран
+     * Срабатывает при изменении sessionUserId или token
+     */
+    LaunchedEffect(sessionUserId, token) {
+        // Проверка авторизации пользователя
+        if (token == null || sessionUserId == null) {
+            Log.e("CATALOG", "No token or userId, skip loading")
+            return@LaunchedEffect
+        }
+        isLoading = true
+        try {
+            val service = RetrofitInstance.userManagementService
+
+            // Загрузка всех товаров с сервера
+            val products: List<ProductDto> = service.getProducts(
+                authHeader = "Bearer $token"
+            )
+
+
+
+            // Создание множества ID товаров, которые находятся в избранном
+            val favSet = favs.mapNotNull { it.product_id }.toSet()
+
+            // Преобразование DTO в модель UI и объединение с данными об избранном
+            allProducts = products.map { p ->
+                CatalogProduct(
+                    id = p.id,
+                    title = p.title,
+                    price = p.cost,
+                    categoryId = p.category_id,
+                    isBestSeller = p.is_best_seller == true,
+                    imageRes = R.drawable.img_shoe_blue, // Временное изображение-заглушка
+                    isFavorite = favSet.contains(p.id), // Проверка, есть ли товар в избранном
+                    description = p.description // Описание из базы данных
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("CATALOG", "load error", e)
+        } finally {
+            isLoading = false
+        }
+    }
+
+    /**
+     * Функция переключения статуса избранного для товара
+     * Отправляет запрос на сервер для добавления или удаления из избранного
+     * @param product товар, для которого меняется статус
+     * @param isFav новый статус избранного (true - добавить, false - удалить)
+     */
+    fun toggleFavourite(product: com.example.examen.ui.view.CatalogProduct, isFav: Boolean) {
+        // Проверка наличия данных авторизации
+        if (sessionUserId == null || token == null) {
+            Log.e("FAV", "No token/userId")
+            return
+        }
+
+        // Запуск корутины для выполнения сетевого запроса
+        scope.launch {
+            try {
+                val service = RetrofitInstance.userManagementService
+
+                if (isFav) {
+                    // Отправка запроса на добавление в избранное
+                    val resp = service.addFavourite(
+                        authHeader = "Bearer $token",
+                        body = FavouriteRequest(
+                            user_id = sessionUserId,
+                            product_id = product.id
+                        )
+                    )
+                    Log.d("FAV", "addFavourite code=${resp.code()} err=${resp.errorBody()?.string()}")
+
+                    // Если запрос не успешен, откатываем изменение статуса
+                    if (!resp.isSuccessful) {
+                        allProducts = allProducts.map {
+                            if (it.id == product.id) it.copy(isFavorite = false) else it
+                        }
+                        return@launch
+                    }
+                } else {
+                    // Отправка запроса на удаление из избранного
+                    val resp = service.deleteFavourite(
+                        authHeader = "Bearer $token",
+                        userIdFilter = "eq.$sessionUserId",
+                        productIdFilter = "eq.${product.id}"
+                    )
+                    Log.d("FAV", "deleteFavourite code=${resp.code()} err=${resp.errorBody()?.string()}")
+                }
+
+                // Обновление локального состояния после успешного запроса
+                allProducts = allProducts.map {
+                    if (it.id == product.id) it.copy(isFavorite = isFav) else it
+                }
+            } catch (e: Exception) {
+                Log.e("FAV", "toggle error", e)
+                // При ошибке откатываем изменение статуса
+                allProducts = allProducts.map {
+                    if (it.id == product.id) it.copy(isFavorite = !isFav) else it
+                }
+            }
+        }
+    }
+
+    // Определение текущей выбранной категории по названию
+    val currentCategory = categories.find { it.title == selectedCategory }
+
+    // Фильтрация товаров по выбранной категории
+    val filteredProducts = allProducts.filter { product ->
+        when (currentCategory?.id) {
+            null, "all" -> true // Если категория не выбрана или выбрана "Все", показываем все товары
+            else -> product.categoryId == currentCategory.id // Иначе фильтруем по ID категории
+        }
+    }
 
     // Основная верстка экрана
     Column(
@@ -98,7 +223,7 @@ fun CatalogScreen(
         TopAppBar(
             title = {
                 Text(
-                    text = "", // Отображение названия выбранной категории
+                    text = selectedCategory, // Отображение названия выбранной категории
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -133,8 +258,76 @@ fun CatalogScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Горизонтальный список категорий с возможностью прокрутки
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()), // Горизонтальная прокрутка
+                horizontalArrangement = Arrangement.spacedBy(8.dp) // Отступы между элементами
+            ) {
+                categories.forEach { category ->
+                    val isSelected = selectedCategory == category.title
+                    // Чип категории
+                    Box(
+                        modifier = Modifier
+                            .height(32.dp)
+                            .clip(RoundedCornerShape(16.dp)) // Скругление углов
+                            .background(
+                                if (isSelected) Color(0xFF48B2E7) else Color.White // Разный цвет для выбранной/невыбранной
+                            )
+                            .clickable { selectedCategory = category.title } // Обработка нажатия
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = category.title,
+                            fontSize = 13.sp,
+                            color = if (isSelected) Color.White else Color(0xFF333333),
+                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                        )
+                    }
+                }
+            }
 
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // Отображение индикатора загрузки или сетки товаров
+        if (isLoading) {
+            // Индикатор загрузки по центру экрана
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFF48B2E7))
+            }
+        } else {
+            // Сетка товаров в 2 колонки
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2), // Фиксированное количество колонок - 2
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 12.dp),
+                contentPadding = PaddingValues(bottom = 16.dp), // Отступ снизу
+                horizontalArrangement = Arrangement.spacedBy(12.dp), // Горизонтальный отступ между карточками
+                verticalArrangement = Arrangement.spacedBy(12.dp) // Вертикальный отступ между карточками
+            ) {
+                // Отображение отфильтрованных товаров
+                items(filteredProducts, key = { it.id }) { product ->
+                    // Область нажатия для перехода на детальный экран
+                    Box(
+                        modifier = Modifier.clickable {
+                            navController.navigate("details/${product.id}") // Навигация с ID товара
+                        }
+                    ) {
+                        // Карточка товара
+                        CatalogProductCard(
+                            product = product,
+                            onToggleFavorite = ::toggleFavourite // Передаем функцию переключения избранного
+                        )
+                    }
+                }
+            }
         }
     }
 }
