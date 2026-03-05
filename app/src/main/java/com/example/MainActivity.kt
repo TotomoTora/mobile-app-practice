@@ -18,11 +18,15 @@ import com.example.data.UserSession
 import com.example.practice.ui.theme.ExamenTheme
 import com.example.practice.ui.view.*
 import com.example.ui.view.CatalogScreen
+import com.example.ui.view.FavoriteScreen
 import com.example.ui.view.HomeScreen
 import com.example.ui.view.OnboardingScreen
-
 import com.example.ui.view.ProfileScreen
 
+/**
+ * Главная активность приложения
+ * Отвечает за настройку навигации между экранами и инициализацию splash screen
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         // Устанавливаем splash screen, который отображается при запуске приложения
@@ -54,7 +58,7 @@ class MainActivity : ComponentActivity() {
                          * Экран онбординга (приветственные слайды)
                          * Показывается при первом запуске приложения
                          */
-                        composable("onboarding") {OnboardingScreen(navController) }
+                        composable("onboarding") { OnboardingScreen(navController) }
 
                         /**
                          * Экран входа в приложение
@@ -122,6 +126,13 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 initialCategoryTitle = "Outdoor"
                             )
+                        }
+
+                        /**
+                         * Экран избранного (список товаров, добавленных в избранное)
+                         */
+                        composable("favorite") {
+                            FavoriteScreen(navController = navController)
                         }
                         // ============= ЭКРАНЫ ВОССТАНОВЛЕНИЯ ПАРОЛЯ =============
 
