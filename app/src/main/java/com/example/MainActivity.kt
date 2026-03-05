@@ -17,55 +17,128 @@ import androidx.navigation.navArgument
 import com.example.data.UserSession
 import com.example.practice.ui.theme.ExamenTheme
 import com.example.practice.ui.view.*
+import com.example.ui.view.CatalogScreen
 import com.example.ui.view.HomeScreen
-import com.example.ui.view.Onboard1Screen
-import com.example.ui.view.Onboard2Screen
-import com.example.ui.view.Onboard3Screen
+import com.example.ui.view.OnboardingScreen
+
 import com.example.ui.view.ProfileScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Устанавливаем splash screen, который отображается при запуске приложения
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        // Включаем Edge-to-Edge режим (контент может отображаться под системными панелями)
         enableEdgeToEdge()
 
         setContent {
+            // Применяем кастомную тему приложения
             ExamenTheme {
+                // Создаем навигационный контроллер для управления переходами между экранами
                 val navController = rememberNavController()
 
+                // Scaffold предоставляет базовую структуру экрана (можно добавить верхнюю/нижнюю панель)
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    /**
+                     * NavHost - контейнер для всех экранов приложения
+                     * Определяет граф навигации и начальный экран
+                     */
                     NavHost(
                         navController = navController,
-                        startDestination = "onboard1",
-                        modifier = Modifier.padding(innerPadding)
+                        startDestination = "onboarding", // Стартовый экран - онбординг
+                        modifier = Modifier.padding(innerPadding) // Учитываем отступы от Scaffold
                     ) {
-                        composable("onboard1") { Onboard1Screen(navController) }
-                        composable("onboard2") { Onboard2Screen(navController) }
-                        composable("onboard3") { Onboard3Screen(navController) }
+                        // ============= ЭКРАНЫ АВТОРИЗАЦИИ И ОНБОРДИНГА =============
 
+                        /**
+                         * Экран онбординга (приветственные слайды)
+                         * Показывается при первом запуске приложения
+                         */
+                        composable("onboarding") {OnboardingScreen(navController) }
+
+                        /**
+                         * Экран входа в приложение
+                         */
                         composable("login") { LoginScreen(navController = navController) }
+
+                        /**
+                         * Экран регистрации нового пользователя
+                         */
                         composable("register") { RegisterScreen(navController = navController) }
 
+                        // ============= ОСНОВНЫЕ ЭКРАНЫ ПРИЛОЖЕНИЯ =============
+
+                        /**
+                         * Главный экран с лентой товаров и категориями
+                         */
                         composable("home") { HomeScreen(navController = navController) }
+
+                        /**
+                         * Экран профиля пользователя
+                         * Проверяет наличие авторизации (userId и accessToken)
+                         * Если пользователь не авторизован, перенаправляет на экран входа
+                         */
                         composable("profile") {
                             val userId = UserSession.userId
                             val accessToken = UserSession.accessToken
 
                             if (userId != null && accessToken != null) {
+                                // Пользователь авторизован - показываем профиль
                                 ProfileScreen(
                                     navController = navController,
                                     userId = userId,
                                     accessToken = accessToken
                                 )
                             } else {
+                                // Пользователь не авторизован - отправляем на вход
                                 LoginScreen(navController = navController)
                             }
                         }
 
+                        /**
+                         * Экран каталога товаров с фильтрацией по категории
+                         * Принимает параметр category в маршруте
+                         * Пример: "catalog/Outdoor"
+                         */
+                        composable(
+                            route = "catalog/{category}",
+                            arguments = listOf(
+                                navArgument("category") { type = NavType.StringType }
+                            )
+                        ) { backStackEntry ->
+                            val category =
+                                backStackEntry.arguments?.getString("category") ?: "Outdoor"
+                            CatalogScreen(
+                                navController = navController,
+                                initialCategoryTitle = category
+                            )
+                        }
+
+                        /**
+                         * Экран каталога без параметра (по умолчанию "Outdoor")
+                         */
+                        composable("catalog") {
+                            CatalogScreen(
+                                navController = navController,
+                                initialCategoryTitle = "Outdoor"
+                            )
+                        }
+                        // ============= ЭКРАНЫ ВОССТАНОВЛЕНИЯ ПАРОЛЯ =============
+
+                        /**
+                         * Экран запроса email для восстановления пароля
+                         */
                         composable("forgot_password") {
                             ForgotPasswordScreen(navController)
                         }
 
+                        /**
+                         * Экран подтверждения OTP-кода
+                         * Принимает параметры:
+                         * - email: email пользователя
+                         * - type: тип операции (signup - регистрация, recovery - восстановление)
+                         * Пример: "verifyOTP/user@example.com/recovery"
+                         */
                         composable(
                             route = "verifyOTP/{email}/{type}",
                             arguments = listOf(
@@ -82,6 +155,11 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+                        /**
+                         * Экран установки нового пароля
+                         * Принимает параметр email в маршруте
+                         * Пример: "new_password/user@example.com"
+                         */
                         composable(
                             route = "new_password/{email}",
                             arguments = listOf(
