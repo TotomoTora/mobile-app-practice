@@ -4,9 +4,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.data.RetrofitInstance
-import com.example.data.UserSession
-import com.example.data.model.SignInRequest
+import com.example.practice.data.RetrofitInstance
+import com.example.practice.data.UserSession
+import com.example.practice.data.model.SignInRequest
 import kotlinx.coroutines.launch
 
 /**

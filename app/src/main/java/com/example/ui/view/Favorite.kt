@@ -1,4 +1,4 @@
-package com.example.ui.view
+package com.example.practice.ui.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,12 +22,10 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.data.RetrofitInstance
-import com.example.data.UserSession
 import com.example.practice.R
+import com.example.practice.data.RetrofitInstance
+import com.example.practice.data.UserSession
 import kotlinx.coroutines.launch
-import kotlin.collections.mapNotNull
-import kotlin.collections.toSet
 
 /**
  * Экран избранного - отображает товары, добавленные пользователем в избранное

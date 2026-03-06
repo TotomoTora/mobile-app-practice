@@ -1,6 +1,5 @@
 package com.example.practice.ui.view
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,53 +28,66 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.practice.R
 import com.example.practice.ui.theme.ExamenTheme
 import com.example.practice.ui.viewModel.SignInViewModel
-import com.example.data.model.SignInRequest
-import com.example.practice.R
+import com.example.practice.data.model.SignInRequest
 
+/**
+ * Экран входа в приложение (логин)
+ * Позволяет пользователю авторизоваться с помощью email и пароля
+ *
+ * @param modifier модификатор для настройки компоновки
+ * @param navController навигационный контроллер для переходов между экранами
+ * @param viewModel view-model для обработки логики входа
+ */
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     viewModel: SignInViewModel = viewModel()
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var showPassword by remember { mutableStateOf(false) }
-    val scrollState = rememberScrollState()
+    // Состояния полей ввода
+    var email by remember { mutableStateOf("") } // Email пользователя
+    var password by remember { mutableStateOf("") } // Пароль
+    var showPassword by remember { mutableStateOf(false) } // Отображение/скрытие пароля
+    val scrollState = rememberScrollState() // Состояние прокрутки
 
+    // Основная поверхность экрана
     Surface(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(), // На весь экран
         color = Color.White
     ) {
+        // Колонка с прокруткой для всего контента
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(horizontal = 24.dp)
+                .verticalScroll(scrollState) // Вертикальная прокрутка
+                .padding(horizontal = 24.dp) // Горизонтальные отступы
         ) {
+            // Верхний отступ для визуального баланса
             Spacer(modifier = Modifier.height(50.dp))
 
-            // Кнопка "Назад"
+            // Кнопка "Назад" для возврата к предыдущему экрану
             Box(
                 modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFF2F2F2))
-                    .clickable { navController.popBackStack() },
+                    .size(32.dp) // Размер 32x32 dp
+                    .clip(CircleShape) // Круглая форма
+                    .background(Color(0xFFF2F2F2)) // Светло-серый фон
+                    .clickable { navController.popBackStack() }, // Возврат на предыдущий экран
                 contentAlignment = Alignment.Center
             ) {
-                Image(
+                Icon(
                     painter = painterResource(id = R.drawable.arrow),
                     contentDescription = "Назад",
-                    modifier = Modifier.size(20.dp)
+                    tint = Color(0xFF555555) // Темно-серый цвет
                 )
-
             }
 
-            Spacer(modifier = Modifier.height(30.dp)) // Такой же отступ как в Register
+            // Отступ после кнопки
+            Spacer(modifier = Modifier.height(30.dp))
 
+            // Заголовок экрана
             Text(
                 text = "Привет!",
                 fontSize = 30.sp,
@@ -85,8 +97,10 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Отступ между заголовками
             Spacer(modifier = Modifier.height(4.dp))
 
+            // Подзаголовок с пояснением
             Text(
                 text = "Заполните Свои Данные",
                 fontSize = 14.sp,
@@ -95,9 +109,10 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(40.dp)) // Был 60, стал 40 для симметрии с Register
+            // Отступ перед полями ввода
+            Spacer(modifier = Modifier.height(40.dp))
 
-            // Email
+            // Поле ввода email
             Text(
                 text = "Email",
                 fontSize = 13.sp,
@@ -110,12 +125,13 @@ fun LoginScreen(
                 value = email,
                 onValueChange = { email = it },
                 placeholder = "xyz@gmail.com",
-                keyboardType = KeyboardType.Email
+                keyboardType = KeyboardType.Email // Тип клавиатуры для email
             )
 
+            // Отступ между полями
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Пароль
+            // Поле ввода пароля
             Text(
                 text = "Пароль",
                 fontSize = 13.sp,
@@ -129,55 +145,63 @@ fun LoginScreen(
                 onValueChange = { password = it },
                 placeholder = "********",
                 trailingIcon = {
+                    // Иконка для переключения видимости пароля
                     IconButton(onClick = { showPassword = !showPassword }) {
                         Icon(
                             imageVector = if (showPassword)
-                                Icons.Default.VisibilityOff
+                                Icons.Default.VisibilityOff // Глаз перечеркнутый (скрыть)
                             else
-                                Icons.Default.Visibility,
+                                Icons.Default.Visibility, // Глаз (показать)
                             contentDescription = "Показать/скрыть пароль",
                             tint = Color(0xFFB0B0B0)
                         )
                     }
                 },
-                keyboardType = KeyboardType.Password,
+                keyboardType = KeyboardType.Password, // Тип клавиатуры для пароля
                 visualTransformation = if (showPassword)
-                    VisualTransformation.None
+                    VisualTransformation.None // Без трансформации (видимый текст)
                 else
-                    PasswordVisualTransformation()
+                    PasswordVisualTransformation() // Скрытие символов пароля
             )
 
+            // Отступ после поля пароля
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Ссылка на восстановление пароля
             Text(
                 text = "Восстановить",
                 fontSize = 12.sp,
                 color = Color(0xFF9E9E9E),
                 modifier = Modifier
-                    .align(Alignment.End)
+                    .align(Alignment.End) // Выравнивание по правому краю
                     .clickable {
+                        // Переход на экран восстановления пароля
                         navController.navigate("forgot_password")
                     }
             )
 
-
+            // Отступ перед кнопкой входа
             Spacer(modifier = Modifier.height(28.dp))
 
-            // Кнопка Войти
+            /**
+             * Кнопка входа в приложение
+             * Отправляет запрос на авторизацию
+             */
             Button(
                 onClick = {
+                    // Вызов метода входа из ViewModel
                     viewModel.signIn(
-                        SignInRequest(email.trim(), password.trim()),
+                        SignInRequest(email.trim(), password.trim()), // Данные для входа
                         navController = navController
                     )
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(18.dp),
+                    .fillMaxWidth() // На всю ширину
+                    .height(52.dp), // Фиксированная высота
+                shape = RoundedCornerShape(18.dp), // Скругленные углы
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF48B2E7),
-                    contentColor = Color.White
+                    containerColor = Color(0xFF48B2E7), // Голубой цвет кнопки
+                    contentColor = Color.White // Белый текст
                 )
             ) {
                 Text(
@@ -187,10 +211,13 @@ fun LoginScreen(
                 )
             }
 
-            // Заполнитель пространства
+            /**
+             * Заполнитель пространства (weight(1f) занимает всё доступное место
+             * между кнопкой и нижним текстом, прижимая нижний текст к низу экрана)
+             */
             Spacer(modifier = Modifier.weight(1f))
 
-            // Низ: "Вы впервые? Создать"
+            // Нижняя строка со ссылкой на регистрацию для новых пользователей
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -209,6 +236,7 @@ fun LoginScreen(
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF333333),
                     modifier = Modifier.clickable {
+                        // Переход на экран регистрации
                         navController.navigate("register")
                     }
                 )
@@ -217,7 +245,17 @@ fun LoginScreen(
     }
 }
 
-// Переиспользуемый компонент для ввода текста (копия для автономности файла)
+/**
+ * Стилизованное текстовое поле с кастомным оформлением
+ * (Переиспользуемый компонент, скопирован для автономности файла)
+ *
+ * @param value текущее значение поля
+ * @param onValueChange колбэк при изменении значения
+ * @param placeholder текст-подсказка
+ * @param trailingIcon опциональная иконка в конце поля
+ * @param keyboardType тип клавиатуры для ввода
+ * @param visualTransformation трансформация визуального отображения (для пароля)
+ */
 @Composable
 private fun StyledTextField(
     value: String,
@@ -230,33 +268,45 @@ private fun StyledTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(), // На всю ширину
         placeholder = {
             Text(
                 text = placeholder,
                 fontSize = 14.sp,
-                color = Color(0xFFCBCBCB)
+                color = Color(0xFFCBCBCB) // Светло-серый цвет плейсхолдера
             )
         },
         trailingIcon = trailingIcon,
-        singleLine = true,
+        singleLine = true, // Однострочный ввод
         visualTransformation = visualTransformation,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        shape = RoundedCornerShape(18.dp),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType), // Настройки клавиатуры
+        shape = RoundedCornerShape(18.dp), // Скругленные углы
         colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = Color(0xFF333333),
-            unfocusedTextColor = Color(0xFF333333),
-            focusedContainerColor = Color(0xFFF7F7F7),
-            unfocusedContainerColor = Color(0xFFF7F7F7),
+            // Цвет текста
+            focusedTextColor = Color(0xFF333333), // Темно-серый при фокусе
+            unfocusedTextColor = Color(0xFF333333), // Темно-серый без фокуса
+
+            // Цвет фона
+            focusedContainerColor = Color(0xFFF7F7F7), // Светло-серый при фокусе
+            unfocusedContainerColor = Color(0xFFF7F7F7), // Светло-серый без фокуса
+
+            // Убираем рамку
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent,
-            cursorColor = Color(0xFF333333),
+
+            // Цвет курсора
+            cursorColor = Color(0xFF333333), // Темно-серый
+
+            // Цвет плейсхолдера
             focusedPlaceholderColor = Color(0xFFCBCBCB),
             unfocusedPlaceholderColor = Color(0xFFCBCBCB)
         )
     )
 }
 
+/**
+ * Предпросмотр экрана входа для разработки
+ */
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {

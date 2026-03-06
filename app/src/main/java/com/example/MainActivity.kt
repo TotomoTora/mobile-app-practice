@@ -14,15 +14,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.data.UserSession
+import com.example.practice.data.UserSession
 import com.example.practice.ui.theme.ExamenTheme
 import com.example.practice.ui.view.*
-import com.example.ui.view.CatalogScreen
-import com.example.ui.view.DetailsScreen
-import com.example.ui.view.FavoriteScreen
-import com.example.ui.view.HomeScreen
-import com.example.ui.view.OnboardingScreen
-import com.example.ui.view.ProfileScreen
 
 /**
  * Главная активность приложения

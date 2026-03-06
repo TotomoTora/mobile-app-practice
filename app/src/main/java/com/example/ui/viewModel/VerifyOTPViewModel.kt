@@ -5,8 +5,8 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.data.RetrofitInstance
-import com.example.data.model.VerifyOtpRequest
+import com.example.practice.data.RetrofitInstance
+import com.example.practice.data.model.VerifyOtpRequest
 import kotlinx.coroutines.launch
 
 

@@ -3,7 +3,7 @@ package com.example.practice.ui.viewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.RetrofitInstance
+import com.example.practice.data.RetrofitInstance
 import kotlinx.coroutines.launch
 /**
  * ViewModel для экрана восстановления пароля (ForgotPasswordScreen)

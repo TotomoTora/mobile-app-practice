@@ -1,4 +1,4 @@
-package com.example.data.model
+package com.example.practice.data.model
 
 data class VerifyOtpRequest(
     val type: String = "signup",

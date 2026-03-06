@@ -1,14 +1,11 @@
 package com.example.practice.data.service
 
-import com.example.data.model.SignUpResponse
-import com.example.data.model.VerifyOtpRequest
-import com.example.data.model.VerifyOtpResponse
-import com.example.data.model.*
+import com.example.practice.data.model.*
 import retrofit2.Response
+import retrofit2.http.PATCH
 import retrofit2.http.*
 
 const val API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZHlva29ncWxjZHFseHd1b3pvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MjY4MTEsImV4cCI6MjA4ODEwMjgxMX0.wWRgbr1ScucUI7BOzXwO3VYjNXTy-6BWCsL9Dmd4kE0"
-
 
 data class ProfileDto(
     val id: String?,
@@ -67,7 +64,7 @@ interface UserManagementService {
         @Header("Authorization") authHeader: String,
         @Query("user_id") userIdFilter: String, // "eq.<uuid>"
         @Query("select") select: String = "*"
-    ): List<com.example.practice.data.service.ProfileDto>
+    ): List<ProfileDto>
 
     @Headers("apikey: $API_KEY", "Content-Type: application/json")
     @PUT("rest/v1/profiles")
@@ -84,7 +81,7 @@ interface UserManagementService {
     suspend fun getProducts(
         @Header("Authorization") authHeader: String,
         @Query("select") select: String = "*"
-    ): List<com.example.practice.data.service.ProductDto>
+    ): List<ProductDto>
 
     // ---------- FAVOURITE ----------
 
@@ -94,7 +91,7 @@ interface UserManagementService {
         @Header("Authorization") authHeader: String,
         @Query("user_id") userIdFilter: String, // "eq.<uuid>"
         @Query("select") select: String = "id,product_id,user_id"
-    ): List<com.example.practice.data.service.FavouriteDto>
+    ): List<FavouriteDto>
 
     @Headers("apikey: $API_KEY", "Content-Type: application/json")
     @POST("rest/v1/favourite")

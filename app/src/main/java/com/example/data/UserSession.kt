@@ -1,4 +1,4 @@
-package com.example.data
+package com.example.practice.data
 
 object UserSession {
     // id пользователя из auth.users (uuid)

@@ -1,4 +1,4 @@
-package com.example.data
+package com.example.practice.data
 
 import com.example.practice.data.service.UserManagementService
 import okhttp3.OkHttpClient

@@ -1,4 +1,4 @@
-package com.example.ui.view
+package com.example.practice.ui.view
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -33,7 +33,7 @@ import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.practice.R
-import com.example.data.RetrofitInstance
+import com.example.practice.data.RetrofitInstance
 import com.example.practice.data.service.ProfileDto
 import kotlinx.coroutines.launch
 import java.io.File

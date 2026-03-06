@@ -1,4 +1,4 @@
-package com.example.ui.view
+package com.example.practice.data.view
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -25,9 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.practice.R
-import com.example.data.RetrofitInstance
-import com.example.data.UserSession
-import com.example.data.model.FavouriteRequest
+import com.example.practice.data.RetrofitInstance
+import com.example.practice.data.UserSession
+import com.example.practice.data.model.FavouriteRequest
 import com.example.practice.data.service.ProductDto
 import kotlinx.coroutines.launch
 

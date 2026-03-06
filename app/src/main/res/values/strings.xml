@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Общее -->
-    <string name="app_name" translatable="false">practice</string>
+    <string name="app_name">practice</string>
 
     <!-- Home -->
     <string name="home_title">Главная</string>
@@ -22,4 +22,5 @@
     <string name="nav_favorites">Избранное</string>
     <string name="nav_cart">Корзина</string>
     <string name="nav_profile">Профиль</string>
+
 </resources>

@@ -1,7 +1,9 @@
-package com.example.ui.view
+package com.example.practice.ui.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,9 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.data.RetrofitInstance
-import com.example.data.UserSession
-import com.example.data.model.FavouriteRequest
+import com.example.practice.data.RetrofitInstance
+import com.example.practice.data.UserSession
+import com.example.practice.data.model.FavouriteRequest
 import com.example.practice.data.service.ProductDto
 import kotlin.collections.firstOrNull
 import kotlin.collections.map
@@ -189,7 +195,34 @@ fun DetailsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-
+                    // Кнопка назад
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow),
+                            contentDescription = "Назад"
+                        )
+                    }
+                    // Заголовок магазина
+                    Text(
+                        text = "Sneaker Shop",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    // Кнопка избранного для текущего товара
+                    IconButton(
+                        onClick = { toggleFavourite(product, !product.isFavorite) }
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (product.isFavorite)
+                                    R.drawable.ic_heart_filled // Заполненное сердце
+                                else
+                                    R.drawable.ic_favorite_border // Пустое сердце
+                            ),
+                            contentDescription = "Favorite",
+                            tint = if (product.isFavorite) Color(0xFFDD4B4B) else Color(0xFFB0B0B0)
+                        )
+                    }
                 }
 
                 // Основная информация о товаре (с прокруткой)
@@ -243,6 +276,123 @@ fun DetailsScreen(
                             contentDescription = product.title,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit // Масштабирование с сохранением пропорций
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    /**
+                     * Горизонтальная галерея миниатюр всех товаров
+                     * Позволяет быстро переключаться между товарами
+                     */
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()), // Горизонтальная прокрутка
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        allProducts.forEach { p ->
+                            Box(
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(
+                                        if (p.id == product.id)
+                                            Color(0xFFE2F3FF) // Подсветка выбранного товара
+                                        else
+                                            Color(0xFFF2F4F7) // Обычный фон для остальных
+                                    )
+                                    .clickable {
+                                        current = p // Переключение на выбранный товар
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = p.imageRes),
+                                    contentDescription = p.title,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Заголовок секции описания
+                    Text(
+                        text = "Описание",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF222222)
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Текст описания товара из базы данных
+                    Text(
+                        text = product.description,
+                        fontSize = 13.sp,
+                        color = Color(0xFF555555)
+                    )
+                }
+
+                // Нижняя панель с кнопками действий
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Кнопка избранного (круглая)
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                            .clickable {
+                                toggleFavourite(product, !product.isFavorite)
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (product.isFavorite)
+                                    R.drawable.ic_heart_filled
+                                else
+                                    R.drawable.ic_favorite_border
+                            ),
+                            contentDescription = "Favorite",
+                            tint = if (product.isFavorite) Color(0xFFDD4B4B) else Color(0xFFB0B0B0)
+                        )
+                    }
+
+                    // Кнопка добавления в корзину
+                    Button(
+                        onClick = { /* TODO: добавить в корзину */ },
+                        modifier = Modifier
+                            .weight(1f) // Занимает оставшееся пространство
+                            .height(52.dp),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF48B2E7)
+                        )
+                    ) {
+                        // Иконка корзины
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_cart),
+                            contentDescription = null, // Декоративный элемент
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        // Текст кнопки
+                        Text(
+                            text = "В корзину",
+                            fontSize = 15.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
